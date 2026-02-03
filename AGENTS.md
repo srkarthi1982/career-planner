@@ -28,6 +28,7 @@ Defined in `db/tables.ts`:
 
 ## 3. Task Log (Newest first)
 
+- 2026-02-03 Built Career Planner V1 (goals/milestones/tasks, FREE_LIMITS, actions, pages, notifications, summary push).
 - 2026-02-03 Career Planner baseline reset to App Starter (removed example module + admin pages, updated identity).
 - 2026-02-02 Corrected notifications payload contract and tightened billing/webhook/unread-count rules in APPSTARTER-INTEGRATIONS.md.
 - 2026-02-02 Updated APPSTARTER-INTEGRATIONS.md with bootstrap rules, contracts, cleanup, and checklist clarifications.
