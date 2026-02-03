@@ -25,8 +25,10 @@ npm ci
 - `PUBLIC_ROOT_APP_URL` (optional)
 - `PARENT_APP_URL` (optional)
 - `ANSIVERSA_WEBHOOK_SECRET` (optional)
-- `PARENT_NOTIFICATION_WEBHOOK_URL` (optional)
-- `PARENT_ACTIVITY_WEBHOOK_URL` (optional)
+- `ANSIVERSA_DASHBOARD_WEBHOOK_URL` (optional)
+- `ANSIVERSA_DASHBOARD_WEBHOOK_SECRET` (optional)
+- `ANSIVERSA_NOTIFICATIONS_WEBHOOK_URL` (optional)
+- `ANSIVERSA_NOTIFICATIONS_WEBHOOK_SECRET` (optional)
 
 Note: `ANSIVERSA_AUTH_SECRET` is reserved for future auth workflows (not used in this starter yet).
 

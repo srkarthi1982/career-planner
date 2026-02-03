@@ -25,11 +25,17 @@ interface ImportMetaEnv {
   /** Optional: Webhook secret for parent app integrations */
   readonly ANSIVERSA_WEBHOOK_SECRET?: string;
 
-  /** Optional: Parent notification webhook URL override */
-  readonly PARENT_NOTIFICATION_WEBHOOK_URL?: string;
+  /** Optional: Dashboard summary webhook URL */
+  readonly ANSIVERSA_DASHBOARD_WEBHOOK_URL?: string;
 
-  /** Optional: Parent activity webhook URL override */
-  readonly PARENT_ACTIVITY_WEBHOOK_URL?: string;
+  /** Optional: Dashboard summary webhook secret */
+  readonly ANSIVERSA_DASHBOARD_WEBHOOK_SECRET?: string;
+
+  /** Optional: Notifications webhook URL */
+  readonly ANSIVERSA_NOTIFICATIONS_WEBHOOK_URL?: string;
+
+  /** Optional: Notifications webhook secret */
+  readonly ANSIVERSA_NOTIFICATIONS_WEBHOOK_SECRET?: string;
 
   /** Optional: Dev-only auth bypass (requires import.meta.env.DEV) */
   readonly DEV_BYPASS_AUTH?: string;

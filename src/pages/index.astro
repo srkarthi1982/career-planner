@@ -1,29 +1,115 @@
 ---
-import { AvButton, AvCard, AvContainer } from "@ansiversa/components";
+import { AvBreadcrumb, AvButton, AvCard, AvContainer, AvEmptyState } from "@ansiversa/components";
 import AppShell from "../layouts/AppShell.astro";
 
-const title = "Career Planner";
-const description = "Plan your next role with guided milestones, reflections, and progress tracking.";
+const title = "Career Planner – Overview";
+const description = "Track your active goal, milestones, and next career actions.";
+const isPaid = Boolean(Astro.locals.user?.isPaid);
 ---
 
 <AppShell title={title} description={description}>
+  <section class="av-faq-public__crumb">
+    <AvContainer>
+      <AvBreadcrumb items={[{ label: "Overview" }]} />
+    </AvContainer>
+  </section>
+
   <section class="av-section">
     <AvContainer>
-      <div class="av-auth-stack-lg">
+      <div
+        class="av-auth-stack-lg"
+        x-data
+        x-init={`$store.careerPlanner.setBillingStatus(${isPaid}); $store.careerPlanner.loadGoals().then(() => { if ($store.careerPlanner.activeGoalId) { $store.careerPlanner.loadGoalDetail($store.careerPlanner.activeGoalId); } });`}
+      >
         <AvCard className="av-auth-card">
           <div class="av-auth-stack-md">
             <div class="av-auth-stack-xs">
               <p class="av-kicker">Career Planner</p>
-              <h1 class="av-section-title">Map the next chapter of your career</h1>
+              <h1 class="av-section-title">Your career overview</h1>
               <p class="av-text-soft">
-                Capture milestones, target roles, and skill gaps in one place. The Career Planner
-                shell is ready for the next build step.
+                Focus on one active goal, track its milestones, and keep next actions visible.
               </p>
             </div>
 
             <div class="av-row-wrap">
-              <AvButton href="/help">View help</AvButton>
+              <AvButton href="/goals">View goals</AvButton>
+              <AvButton href="/goals/new" variant="ghost">New goal</AvButton>
+              <AvButton href="/help" variant="ghost">Help</AvButton>
             </div>
+          </div>
+        </AvCard>
+
+        <AvCard className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <div class="av-row-between">
+              <div>
+                <h2 class="av-card-heading">Active goal</h2>
+                <p class="av-text-soft">The main goal you are driving right now.</p>
+              </div>
+              <AvButton href="/goals" variant="ghost">Manage</AvButton>
+            </div>
+
+            <template x-if="$store.careerPlanner.activeGoal">
+              <div class="av-card av-card-soft av-auth-stack-sm">
+                <div class="av-row-between">
+                  <div>
+                    <p class="av-text-strong" x-text="$store.careerPlanner.activeGoal.title"></p>
+                    <p class="av-text-soft" x-text="$store.careerPlanner.activeGoal.targetRole || 'Target role not set'"></p>
+                  </div>
+                  <div class="av-card av-card-soft av-auth-stack-xxs">
+                    <p class="av-text-soft">Milestones done</p>
+                    <p
+                      class="av-text-strong"
+                      x-text="(() => { const progress = $store.careerPlanner.getMilestoneProgress($store.careerPlanner.activeGoalId || 0); return `${progress.done}/${progress.total}`; })()"
+                    ></p>
+                  </div>
+                </div>
+                <p class="av-text-soft" x-text="$store.careerPlanner.activeGoal.notes || 'Add notes to keep this goal on track.'"></p>
+                <div class="av-row-wrap">
+                  <AvButton
+                    type="button"
+                    variant="ghost"
+                    @click="$store.careerPlanner.archiveGoal($store.careerPlanner.activeGoalId)"
+                  >
+                    Archive goal
+                  </AvButton>
+                </div>
+              </div>
+            </template>
+
+            <template x-if="!$store.careerPlanner.activeGoal && !$store.careerPlanner.loading">
+              <AvEmptyState title="No active goal yet" description="Create your first career goal to get started." />
+            </template>
+          </div>
+        </AvCard>
+
+        <AvCard className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <div>
+              <h2 class="av-card-heading">Next actions</h2>
+              <p class="av-text-soft">Upcoming tasks for your active goal.</p>
+            </div>
+            <template x-if="$store.careerPlanner.activeGoal">
+              <div class="av-auth-stack-sm">
+                <template
+                  x-for="task in $store.careerPlanner.getNextDueTasks($store.careerPlanner.activeGoalId || 0, 3)"
+                  :key="task.id"
+                >
+                  <div class="av-card av-card-soft av-auth-stack-xxs">
+                    <p class="av-text-strong" x-text="task.title"></p>
+                    <p class="av-text-soft" x-text="task.dueDate ? `Due ${new Date(task.dueDate).toLocaleDateString()}` : 'No due date'"></p>
+                  </div>
+                </template>
+                <template
+                  x-if="$store.careerPlanner.getNextDueTasks($store.careerPlanner.activeGoalId || 0, 3).length === 0"
+                >
+                  <AvEmptyState title="No upcoming tasks" description="Add tasks under a milestone to keep momentum." />
+                </template>
+              </div>
+            </template>
+            <template x-if="!$store.careerPlanner.activeGoal">
+              <AvEmptyState title="Set an active goal" description="Next actions will appear once you create a goal." />
+            </template>
           </div>
         </AvCard>
       </div>

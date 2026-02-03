@@ -2,33 +2,20 @@ import { APP_KEY } from "../app.meta";
 import type { CareerPlannerDashboardSummaryV1 } from "../dashboard/summary.schema";
 import { postWebhook } from "./webhook";
 
-const resolveActivityUrl = (baseUrl?: string | null, overrideUrl?: string | null) => {
-  if (overrideUrl) return overrideUrl;
-  if (!baseUrl) return null;
-  return `${baseUrl.replace(/\/$/, "")}/api/webhooks/${APP_KEY}-activity.json`;
-};
-
-type CareerPlannerActivity = {
-  event: string;
-  occurredAt: string;
-  entityId?: string;
-};
-
-export const pushCareerPlannerActivity = async (params: {
+export const pushCareerPlannerSummary = async (params: {
   userId: string;
-  activity: CareerPlannerActivity;
+  eventType: string;
   summary: CareerPlannerDashboardSummaryV1;
 }): Promise<void> => {
   try {
-    const baseUrl = import.meta.env.PARENT_APP_URL;
-    const overrideUrl = import.meta.env.PARENT_ACTIVITY_WEBHOOK_URL;
-    const secret = import.meta.env.ANSIVERSA_WEBHOOK_SECRET;
+    const url = import.meta.env.ANSIVERSA_DASHBOARD_WEBHOOK_URL ?? null;
+    const secret = import.meta.env.ANSIVERSA_DASHBOARD_WEBHOOK_SECRET;
 
-    const url = resolveActivityUrl(baseUrl, overrideUrl);
     const payload = {
-      userId: params.userId,
       appId: APP_KEY,
-      activity: params.activity,
+      userId: params.userId,
+      eventType: params.eventType,
+      summaryVersion: params.summary.version,
       summary: params.summary,
     };
 
@@ -40,7 +27,7 @@ export const pushCareerPlannerActivity = async (params: {
     });
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.warn("pushCareerPlannerActivity failed", error);
+      console.warn("pushCareerPlannerSummary failed", error);
     }
   }
 };
