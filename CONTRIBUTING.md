@@ -1,15 +1,6 @@
-# Contributing to Ansiversa Mini-App Starter
+# Contributing to Career Planner
 
-Thank you for your interest in improving the Ansiversa Mini-App Starter!
-
-## 🧩 How this starter is used
-
-This repository is used as the **golden template** for all mini-apps in the Ansiversa ecosystem.
-Changes here will eventually flow into many apps, so edits should be:
-
-- Small
-- Clear
-- Backwards compatible where possible
+Thank you for your interest in improving Career Planner!
 
 ## ✅ Contribution steps
 
@@ -24,7 +15,7 @@ Changes here will eventually flow into many apps, so edits should be:
    npm install
    npm run dev
    ```
-5. Ensure the starter builds:
+5. Ensure the app builds:
    ```bash
    npm run build
    ```
@@ -40,8 +31,7 @@ Changes here will eventually flow into many apps, so edits should be:
 
 ## 🧪 Guidelines
 
-- Keep the starter **generic** – avoid app-specific logic.
-- Do not hard-code mini-app names.
-- Prefer changes that improve **all apps** (UX, DX, structure, performance).
-
+- Keep changes aligned with Ansiversa standards and shared patterns.
+- Avoid breaking shared layouts, middleware, or integration contracts.
+- Prefer incremental improvements with clear intent and testing notes.
 Thank you for helping keep the Ansiversa ecosystem clean and consistent 💚

@@ -1,121 +1,115 @@
 # Career Planner
 
-This repository is the official starter template for all **Ansiversa Mini-Apps**.  
-Every app in the Ansiversa ecosystem begins with this structure—clean, fast, and consistent.
+Career Planner is an Ansiversa mini-app focused on helping users plan and track their career
+goals. It inherits the standard middleware auth guard, shared shells, and notification wiring
+from the Ansiversa starter.
 
-If you are a developer or contributor, you can use this template to build any app in the ecosystem.
+## Freeze status
 
----
+Baseline reset to App Starter (Feb-03-2026).
 
-## 🚀 Features
+## Quick start
 
-- **Astro 5** — blazing-fast frontend framework  
-- **Tailwind CSS** — utility-first styling  
-- **@ansiversa/components** — shared UI library for unified design  
-- **Global Styles** — imported automatically from the components package  
-- **Clean File Structure** — easy to extend for any type of app  
-- **Ready for Deployment** — optimized for Vercel out of the box  
-
----
-
-## 📁 Project Structure
+1) Install dependencies
 
 ```
-app/
- ├── public/
- ├── src/
- │   ├── layouts/
- │   │   └── AppShell.astro
- │   └── pages/
- │       ├── index.astro
- │       └── login.astro
- ├── astro.config.mjs
- ├── package.json
- ├── tsconfig.json
- ├── postcss.config.cjs
- └── tailwind.config.cjs
+npm ci
 ```
 
----
+2) Configure env vars (see `src/env.d.ts` for the full list)
 
-## 🧩 Using Ansiversa Components
+- `ANSIVERSA_AUTH_SECRET`
+- `ANSIVERSA_SESSION_SECRET`
+- `ANSIVERSA_COOKIE_DOMAIN`
+- `PUBLIC_APP_KEY`
+- `PUBLIC_ROOT_APP_URL` (optional)
+- `PARENT_APP_URL` (optional)
+- `ANSIVERSA_WEBHOOK_SECRET` (optional)
+- `PARENT_NOTIFICATION_WEBHOOK_URL` (optional)
+- `PARENT_ACTIVITY_WEBHOOK_URL` (optional)
 
-All apps share the same UI look and feel using:
+Note: `ANSIVERSA_AUTH_SECRET` is reserved for future auth workflows (not used in this starter yet).
 
-```ts
-import "@ansiversa/components/styles/global.css";
-import { WebLayout, AuthLayout } from "@ansiversa/components";
+3) Run the app
+
 ```
-
-This ensures:
-
-- Perfect consistency across **100+ apps**
-- Unified branding  
-- Fully reusable layouts and UI blocks  
-
----
-
-## ▶️ Running Locally
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
 npm run dev
 ```
 
-Build for production:
+## How this starter works (mental model)
 
-```bash
-npm run build
+Ansiversa apps run in two layers:
+
+- **Parent app** (ansiversa.com)
+  - Owns authentication, users, billing, notifications
+  - Issues a shared session cookie
+- **Mini-apps** (quiz.ansiversa.com, etc.)
+  - Trust the shared session cookie
+  - Never implement their own auth
+  - Use shared layouts and middleware
+
+This starter simulates that environment so you can build a mini-app without needing
+the parent app locally.
+
+## Local dev without parent app
+
+If you do not have the parent app session cookie, you can enable a DEV-only auth bypass
+to inject a dummy session during local development:
+
+```
+DEV_BYPASS_AUTH=true npm run dev
 ```
 
-Preview production build:
+Optional overrides (defaults shown):
 
-```bash
-npm run preview
+```
+DEV_BYPASS_USER_ID=dev-user
+DEV_BYPASS_EMAIL=dev@local
+DEV_BYPASS_ROLE_ID=1
 ```
 
+⚠️ This bypass only works in local development (import.meta.env.DEV) and is ignored in
+production builds.
+
+After starting the dev server, open `/` or `/help` to confirm the dummy session is active.
+
+## First run checklist
+
+You should be able to:
+
+- Start the app with `npm run dev`
+- Visit `/` and `/help` without redirects when DEV_BYPASS_AUTH is enabled
+
+If this works, your setup is correct.
+
+## Commands
+
+- `npm run dev`
+- `npm run typecheck` (Astro check)
+- `npm run build`
+- `npm run db:push`
+
+## Integration checklist (frozen standard)
+
+See `APPSTARTER-INTEGRATIONS.md` in the repo root. This is the required platform
+integration checklist for every mini-app.
+
+## Database workflow (standard)
+
+This starter intentionally uses file-based remote DB locally for consistency.
+`npm run dev` and `npm run build` run in `--remote` mode against `.astro/content.db`.
+Use `npm run db:push` as the single schema push command.
+
+### Non-negotiable standards
+
+These files define the Ansiversa contract. Do not modify or replace them.
+
+- `src/layouts/AppShell.astro` and `src/layouts/AppAdminShell.astro`
+- `src/middleware.ts` auth guard + admin role gate
+- AppShell unread notifications fetch (`/api/notifications/unread-count`)
+- One global Alpine store pattern (`src/alpine.ts`)
+- Always update `AGENTS.md` when completing a task
+
 ---
 
-## 🌐 Deployment
-
-Ansiversa apps are optimized for **Vercel**:
-
-- No configuration required
-- Astro server output ready
-- CI/CD supported automatically
-
-Just link your repo to Vercel → deploy.
-
----
-
-## 🔗 About Ansiversa
-
-Ansiversa is a curated ecosystem of 100+ premium mini-apps designed for learning, productivity, writing, creativity, utilities, wellness, and more.
-
-Each app shares:
-
-- One global design language  
-- One component system  
-- One identity  
-- Premium UX  
-
-You are currently viewing the official **starter template** that powers all apps.
-
----
-
-## 🤝 Contributing
-
-If you wish to contribute to this template or suggest improvements, please open an issue or submit a pull request.
-
----
-
-## 📄 License
-
-MIT License — free to use and modify.
+Ansiversa motto: Make it simple — but not simpler.
