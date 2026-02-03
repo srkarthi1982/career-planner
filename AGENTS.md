@@ -75,6 +75,9 @@ Defined in `db/tables.ts`:
 
 ## Verification Log
 
+- 2026-02-03 Typecheck hints cleaned to 0.
+- 2026-02-03 `npm run typecheck` (pass; 0 hints).
+- 2026-02-03 `npm run build` (pass).
 - 2026-02-03 `npm run typecheck` (pass; 6 hints: baseRepository + auth redirect pages unused imports).
 - 2026-02-03 `npm run build` (pass).
 - 2026-02-01 `npm run typecheck` (pass; 6 hints in redirect pages/baseRepository).
