@@ -1,10 +1,11 @@
 {
-  "name": "@ansiversa/app-starter",
+  "name": "career-planner",
   "version": "1.0.0",
-  "private": false,
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "astro dev --remote",
+    "typecheck": "astro check",
     "build": "astro build --remote",
     "preview": "astro preview",
     "astro": "astro"
