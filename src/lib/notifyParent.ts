@@ -2,42 +2,30 @@ import { APP_KEY } from "../app.meta";
 import { postWebhook } from "./webhook";
 
 type ParentNotificationPayload = {
-  appKey: typeof APP_KEY;
   userId: string;
+  eventType: string;
   title: string;
-  message: string;
-  level?: "info" | "success" | "warning" | "error";
-  meta?: Record<string, any>;
-  createdAt?: string;
-};
-
-const resolveNotificationUrl = (baseUrl?: string | null, overrideUrl?: string | null) => {
-  if (overrideUrl) return overrideUrl;
-  if (!baseUrl) return null;
-  return `${baseUrl.replace(/\/$/, "")}/api/webhooks/notifications.json`;
+  url: string;
 };
 
 export const notifyParent = async (payload: ParentNotificationPayload): Promise<void> => {
   try {
-    const baseUrl = import.meta.env.PARENT_APP_URL;
-    const overrideUrl = import.meta.env.PARENT_NOTIFICATION_WEBHOOK_URL;
-    const secret = import.meta.env.ANSIVERSA_WEBHOOK_SECRET;
+    const url = import.meta.env.ANSIVERSA_NOTIFICATIONS_WEBHOOK_URL ?? null;
+    const secret = import.meta.env.ANSIVERSA_NOTIFICATIONS_WEBHOOK_SECRET;
 
-    const url = resolveNotificationUrl(baseUrl, overrideUrl);
     const body = {
-      appKey: payload.appKey,
+      appId: APP_KEY,
       userId: payload.userId,
+      eventType: payload.eventType,
       title: payload.title,
-      message: payload.message,
-      level: payload.level ?? "info",
-      meta: payload.meta ?? null,
-      createdAt: payload.createdAt ?? new Date().toISOString(),
+      url: payload.url,
     };
+
     await postWebhook({
       url,
       secret,
       payload: body,
-      appKey: payload.appKey,
+      appKey: APP_KEY,
     });
   } catch (error) {
     if (import.meta.env.DEV) {
