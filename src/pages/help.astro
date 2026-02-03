@@ -1,0 +1,77 @@
+---
+import { AvBreadcrumb, AvButton, AvCard, AvContainer } from "@ansiversa/components";
+import AppShell from "../layouts/AppShell.astro";
+
+const title = "Help – Career Planner";
+const description = "Guidance for getting started with Career Planner.";
+---
+
+<AppShell title={title} description={description}>
+  <section class="av-faq-public__crumb">
+    <AvContainer>
+      <AvBreadcrumb items={[{ label: "Home", href: "/" }, { label: "Help" }]} />
+    </AvContainer>
+  </section>
+
+  <section class="av-section">
+    <AvContainer>
+      <div class="av-auth-stack-lg">
+        <AvCard className="av-auth-stack-md">
+          <div>
+            <p class="av-kicker">Career Planner</p>
+            <h1 class="av-section-title">Help</h1>
+            <p class="av-text-soft">
+              Career Planner helps you map target roles, skill gaps, and action plans across the
+              next 30–180 days.
+            </p>
+          </div>
+          <div class="av-row-wrap">
+            <AvButton href="/">Back to overview</AvButton>
+          </div>
+        </AvCard>
+
+        <AvCard variant="soft" className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <h2 class="av-card-heading">How to start</h2>
+            <div class="av-auth-stack-xs">
+              <p class="av-text-soft">• List a target role and a 90-day milestone.</p>
+              <p class="av-text-soft">• Capture 3 skills to improve this month.</p>
+              <p class="av-text-soft">• Track weekly actions and outcomes.</p>
+            </div>
+          </div>
+        </AvCard>
+
+        <AvCard variant="soft" className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <h2 class="av-card-heading">Key features</h2>
+            <div class="av-auth-stack-xs">
+              <p class="av-text-soft">• Career roadmap milestones and checkpoints.</p>
+              <p class="av-text-soft">• Reflection prompts and weekly reviews.</p>
+              <p class="av-text-soft">• Progress snapshots for your next role.</p>
+            </div>
+          </div>
+        </AvCard>
+
+        <AvCard variant="soft" className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <h2 class="av-card-heading">Free vs Pro</h2>
+            <div class="av-auth-stack-xs">
+              <p class="av-text-soft">• Free: Core planning and weekly check-ins.</p>
+              <p class="av-text-soft">• Pro: Advanced tracking and deeper insights.</p>
+            </div>
+          </div>
+        </AvCard>
+
+        <AvCard variant="soft" className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <h2 class="av-card-heading">Troubleshooting</h2>
+            <div class="av-auth-stack-xs">
+              <p class="av-text-soft">• Enable DEV_BYPASS_AUTH if you lack a session cookie.</p>
+              <p class="av-text-soft">• Ensure env vars are set before build.</p>
+            </div>
+          </div>
+        </AvCard>
+      </div>
+    </AvContainer>
+  </section>
+</AppShell>
