@@ -1,0 +1,86 @@
+---
+import { AvBreadcrumb, AvButton, AvCard, AvContainer, AvEmptyState } from "@ansiversa/components";
+import AppShell from "../../layouts/AppShell.astro";
+import { FREE_LIMITS } from "../../lib/freeLimits";
+
+const title = "Career Goals";
+const description = "Track active and archived career goals.";
+const isPaid = Boolean(Astro.locals.user?.isPaid);
+const maxActiveGoals = FREE_LIMITS.maxActiveGoals;
+---
+
+<AppShell title={title} description={description}>
+  <section class="av-faq-public__crumb">
+    <AvContainer>
+      <AvBreadcrumb items={[{ label: "Goals" }]} />
+    </AvContainer>
+  </section>
+
+  <section
+    class="av-section"
+    x-data
+    x-init={`$store.careerPlanner.setBillingStatus(${isPaid}); $store.careerPlanner.loadGoals();`}
+  >
+    <AvContainer>
+      <div class="av-auth-stack-lg">
+        <AvCard className="av-auth-stack-md">
+          <div class="av-row-between">
+            <div>
+              <p class="av-kicker">Career Planner</p>
+              <h1 class="av-section-title">Goals</h1>
+              <p class="av-text-soft">Free plan supports {maxActiveGoals} active goal.</p>
+            </div>
+            <div class="av-row-wrap">
+              <AvButton href="/goals/new">New goal</AvButton>
+            </div>
+          </div>
+        </AvCard>
+
+        <AvCard className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <template x-if="$store.careerPlanner.notice">
+              <AvCard variant="soft" className="av-auth-stack-xxs">
+                <p class="av-text-strong" x-text="$store.careerPlanner.notice.title"></p>
+                <p class="av-text-soft" x-text="`Event: ${$store.careerPlanner.notice.eventType}`"></p>
+              </AvCard>
+            </template>
+            <template x-if="$store.careerPlanner.goals.length > 0">
+              <div class="av-auth-stack-sm">
+                <template x-for="goal in $store.careerPlanner.goals" :key="goal.id">
+                  <div class="av-card av-card-soft av-auth-stack-xs">
+                    <div class="av-row-between">
+                      <div>
+                        <p class="av-text-strong" x-text="goal.title"></p>
+                        <p class="av-text-soft" x-text="goal.targetRole || 'Target role not set'"></p>
+                      </div>
+                      <div class="av-row-wrap">
+                        <a class="av-btn-ghost av-btn-sm" x-bind:href="`/goals/${goal.id}`">View</a>
+                        <template x-if="goal.status === 'active'">
+                          <button
+                            class="av-btn-ghost av-btn-sm"
+                            type="button"
+                            @click="$store.careerPlanner.archiveGoal(goal.id)"
+                          >
+                            Archive
+                          </button>
+                        </template>
+                      </div>
+                    </div>
+                    <p class="av-text-soft" x-text="goal.notes || 'Add notes to clarify this goal.'"></p>
+                  </div>
+                </template>
+              </div>
+            </template>
+
+            <template x-if="$store.careerPlanner.goals.length === 0 && !$store.careerPlanner.loading">
+              <AvEmptyState title="No goals yet" description="Create a goal to start planning your next role." />
+            </template>
+
+            <p class="av-text-soft" x-show="$store.careerPlanner.error" x-text="$store.careerPlanner.error"></p>
+            <p class="av-text-soft" x-show="$store.careerPlanner.success" x-text="$store.careerPlanner.success"></p>
+          </div>
+        </AvCard>
+      </div>
+    </AvContainer>
+  </section>
+</AppShell>

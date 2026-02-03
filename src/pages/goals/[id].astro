@@ -1,0 +1,198 @@
+---
+import {
+  AvBreadcrumb,
+  AvButton,
+  AvCard,
+  AvContainer,
+  AvEmptyState,
+  AvInput,
+  AvSelect,
+  AvTextarea,
+} from "@ansiversa/components";
+import AppShell from "../../layouts/AppShell.astro";
+import { FREE_LIMITS } from "../../lib/freeLimits";
+
+const goalId = Number(Astro.params.id);
+if (!Number.isFinite(goalId)) {
+  return Astro.redirect("/goals");
+}
+
+const title = "Goal details";
+const description = "Track milestones and tasks for this goal.";
+const isPaid = Boolean(Astro.locals.user?.isPaid);
+const maxMilestones = FREE_LIMITS.maxMilestones;
+const maxTasks = FREE_LIMITS.maxTasks;
+---
+
+<AppShell title={title} description={description}>
+  <section class="av-faq-public__crumb">
+    <AvContainer>
+      <AvBreadcrumb items={[{ label: "Goals", href: "/goals" }, { label: "Details" }]} />
+    </AvContainer>
+  </section>
+
+  <section
+    class="av-section"
+    x-data={`{ goalId: ${goalId} }`}
+    x-init={`$store.careerPlanner.setBillingStatus(${isPaid}); $store.careerPlanner.loadGoalDetail(goalId);`}
+  >
+    <AvContainer>
+      <div class="av-auth-stack-lg">
+        <AvCard className="av-auth-stack-md">
+          <div class="av-row-between">
+            <div>
+              <p class="av-kicker">Career Planner</p>
+              <h1 class="av-section-title" x-text="$store.careerPlanner.activeGoal?.title || 'Goal details'"></h1>
+              <p class="av-text-soft" x-text="$store.careerPlanner.activeGoal?.targetRole || 'Target role not set'"></p>
+            </div>
+            <div class="av-row-wrap">
+              <AvButton href="/goals" variant="ghost">Back to goals</AvButton>
+              <AvButton
+                type="button"
+                variant="ghost"
+                @click="$store.careerPlanner.archiveGoal(goalId)"
+              >
+                Archive goal
+              </AvButton>
+            </div>
+          </div>
+          <p class="av-text-soft" x-text="$store.careerPlanner.activeGoal?.notes || 'Add notes to clarify this goal.'"></p>
+        </AvCard>
+
+        <template x-if="$store.careerPlanner.notice">
+          <AvCard variant="soft" className="av-auth-stack-xs">
+            <p class="av-text-strong" x-text="$store.careerPlanner.notice.title"></p>
+            <p class="av-text-soft" x-text="`Event: ${$store.careerPlanner.notice.eventType}`"></p>
+          </AvCard>
+        </template>
+
+        <AvCard className="av-auth-stack-md">
+          <div class="av-auth-stack-sm">
+            <div>
+              <h2 class="av-card-heading">Milestones</h2>
+              <p class="av-text-soft">Free plan supports {maxMilestones} milestones total.</p>
+            </div>
+
+            <div class="av-auth-stack-sm">
+              <template x-for="milestone in $store.careerPlanner.getMilestones(goalId)" :key="milestone.id">
+                <div class="av-card av-card-soft av-auth-stack-sm">
+                  <div class="av-row-between">
+                    <div>
+                      <p class="av-text-strong" x-text="milestone.title"></p>
+                      <p class="av-text-soft" x-text="milestone.description || 'Add a description for this milestone.'"></p>
+                      <p class="av-text-soft" x-text="milestone.targetDate ? `Target: ${new Date(milestone.targetDate).toLocaleDateString()}` : 'No target date'"></p>
+                    </div>
+                    <div class="av-row-wrap">
+                      <AvSelect
+                        name="milestone-status"
+                        :value="milestone.status"
+                        @change="$store.careerPlanner.setMilestoneStatus(milestone, $event.target.value)"
+                      >
+                        <option value="todo">Todo</option>
+                        <option value="doing">Doing</option>
+                        <option value="done">Done</option>
+                      </AvSelect>
+                    </div>
+                  </div>
+
+                  <div class="av-auth-stack-xs">
+                    <h3 class="av-card-heading">Tasks</h3>
+                    <template x-for="task in $store.careerPlanner.getTasks(milestone.id)" :key="task.id">
+                      <div class="av-card av-card-soft av-auth-stack-xxs">
+                        <div class="av-row-between">
+                          <div>
+                            <p class="av-text-strong" x-text="task.title"></p>
+                            <p class="av-text-soft" x-text="task.dueDate ? `Due ${new Date(task.dueDate).toLocaleDateString()}` : 'No due date'"></p>
+                          </div>
+                          <AvSelect
+                            name="task-status"
+                            :value="task.status"
+                            @change="$store.careerPlanner.setTaskStatus(task, $event.target.value)"
+                          >
+                            <option value="todo">Todo</option>
+                            <option value="doing">Doing</option>
+                            <option value="done">Done</option>
+                          </AvSelect>
+                        </div>
+                        <p class="av-text-soft" x-text="task.notes || 'Add notes to capture the next step.'"></p>
+                      </div>
+                    </template>
+
+                    <template x-if="$store.careerPlanner.getTasks(milestone.id).length === 0">
+                      <AvEmptyState title="No tasks yet" description="Add tasks to keep this milestone moving." />
+                    </template>
+
+                    <form class="av-auth-stack-sm" @submit.prevent="$store.careerPlanner.createTask(milestone.id)">
+                      <AvInput
+                        label="Task title"
+                        name="task-title"
+                        placeholder="e.g., Schedule informational interview"
+                        x-model="$store.careerPlanner.taskForm.title"
+                        required
+                      />
+                      <AvInput
+                        label="Due date (optional)"
+                        name="task-due"
+                        type="date"
+                        x-model="$store.careerPlanner.taskForm.dueDate"
+                      />
+                      <AvTextarea
+                        label="Notes (optional)"
+                        name="task-notes"
+                        rows={3}
+                        placeholder="Context or outcome"
+                        x-model="$store.careerPlanner.taskForm.notes"
+                      />
+                      <div class="av-row-wrap">
+                        <AvButton type="submit" :disabled="$store.careerPlanner.loading">Add task</AvButton>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </template>
+
+              <template x-if="$store.careerPlanner.getMilestones(goalId).length === 0 && !$store.careerPlanner.loading">
+                <AvEmptyState title="No milestones yet" description="Create the first milestone for this goal." />
+              </template>
+            </div>
+
+            <form class="av-auth-stack-sm" @submit.prevent="$store.careerPlanner.createMilestone(goalId)">
+              <AvInput
+                label="Milestone title"
+                name="milestone-title"
+                placeholder="e.g., Update portfolio with 3 case studies"
+                x-model="$store.careerPlanner.milestoneForm.title"
+                required
+              />
+              <AvInput
+                label="Target date (optional)"
+                name="milestone-target"
+                type="date"
+                x-model="$store.careerPlanner.milestoneForm.targetDate"
+              />
+              <AvTextarea
+                label="Description (optional)"
+                name="milestone-description"
+                rows={3}
+                placeholder="Why this milestone matters"
+                x-model="$store.careerPlanner.milestoneForm.description"
+              />
+              <div class="av-row-wrap">
+                <AvButton type="submit" :disabled="$store.careerPlanner.loading">Add milestone</AvButton>
+                <AvButton href="/goals" variant="ghost">Back</AvButton>
+              </div>
+              <p class="av-text-soft" x-show="$store.careerPlanner.error" x-text="$store.careerPlanner.error"></p>
+              <p class="av-text-soft" x-show="$store.careerPlanner.success" x-text="$store.careerPlanner.success"></p>
+            </form>
+          </div>
+        </AvCard>
+
+        <AvCard variant="soft" className="av-auth-stack-xs">
+          <p class="av-text-strong">Free plan limits</p>
+          <p class="av-text-soft">Up to {maxMilestones} milestones and {maxTasks} tasks total.</p>
+          <AvButton href="/pricing" variant="ghost">View pricing</AvButton>
+        </AvCard>
+      </div>
+    </AvContainer>
+  </section>
+</AppShell>

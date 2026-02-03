@@ -1,0 +1,74 @@
+---
+import {
+  AvBreadcrumb,
+  AvButton,
+  AvCard,
+  AvContainer,
+  AvInput,
+  AvTextarea,
+} from "@ansiversa/components";
+import AppShell from "../../layouts/AppShell.astro";
+import { FREE_LIMITS } from "../../lib/freeLimits";
+
+const title = "New Goal";
+const description = "Define a new career goal.";
+const isPaid = Boolean(Astro.locals.user?.isPaid);
+const maxActiveGoals = FREE_LIMITS.maxActiveGoals;
+---
+
+<AppShell title={title} description={description}>
+  <section class="av-faq-public__crumb">
+    <AvContainer>
+      <AvBreadcrumb items={[{ label: "Goals", href: "/goals" }, { label: "New" }]} />
+    </AvContainer>
+  </section>
+
+  <section
+    class="av-section"
+    x-data
+    x-init={`$store.careerPlanner.setBillingStatus(${isPaid});`}
+  >
+    <AvContainer>
+      <div class="av-auth-stack-lg">
+        <AvCard className="av-auth-stack-md">
+          <div>
+            <p class="av-kicker">Career Planner</p>
+            <h1 class="av-section-title">Create a goal</h1>
+            <p class="av-text-soft">Free plan supports {maxActiveGoals} active goal.</p>
+          </div>
+        </AvCard>
+
+        <AvCard className="av-auth-stack-md">
+          <form class="av-auth-stack-sm" @submit.prevent="$store.careerPlanner.createGoal()">
+            <AvInput
+              label="Goal title"
+              name="goal-title"
+              placeholder="e.g., Become a product manager"
+              x-model="$store.careerPlanner.goalForm.title"
+              required
+            />
+            <AvInput
+              label="Target role (optional)"
+              name="goal-target-role"
+              placeholder="e.g., Senior PM, Growth PM"
+              x-model="$store.careerPlanner.goalForm.targetRole"
+            />
+            <AvTextarea
+              label="Notes (optional)"
+              name="goal-notes"
+              placeholder="Key motivations, timeline, or constraints"
+              rows={4}
+              x-model="$store.careerPlanner.goalForm.notes"
+            />
+            <div class="av-row-wrap">
+              <AvButton type="submit" :disabled="$store.careerPlanner.loading">Create goal</AvButton>
+              <AvButton href="/goals" variant="ghost">Cancel</AvButton>
+            </div>
+            <p class="av-text-soft" x-show="$store.careerPlanner.error" x-text="$store.careerPlanner.error"></p>
+            <p class="av-text-soft" x-show="$store.careerPlanner.success" x-text="$store.careerPlanner.success"></p>
+          </form>
+        </AvCard>
+      </div>
+    </AvContainer>
+  </section>
+</AppShell>
